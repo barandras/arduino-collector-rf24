@@ -7,13 +7,19 @@
 RF24 radio(9, 10);  // Set up nRF24L01 radio on SPI bus plus pins 9 & 10
 
 // Radio pipe addresses for the master node to communicate.
-const uint64_t addresses[] = {0xF0F0F0F0E1LL};
+// First board (no. 1): 0xF0F0F0F001LL
+// Second board (kisszoba): 0xF0F0F0F002LL
+// Third board (konyha): 0xF0F0F0F003LL
+const uint64_t addresses = 0xF0F0F0F001LL;
+
+const uint8_t moistureSensorPin = A0; // Analog pin where the moisture sensor is connected to
 
 SHTSensor sht;
 
 struct Payload {
   float temperature;
   float humidity;
+  uint16_t moisture;
 };
 
 void setup(void)
@@ -31,12 +37,13 @@ void setup(void)
   radio.setRetries(5, 15);        // delay between retries = 5 * 250 + 250 = 1500 microseconds, number of retries = 15
 
   // Open a writing pipe
-  radio.openWritingPipe(addresses[0]);
+  radio.openWritingPipe(addresses);
 
   radio.stopListening();                          // Stop listening so we can talk.
   radio.printDetails();           // Dump the configuration of the rf unit for debugging
 
   Wire.begin();
+
   // initialize sensor with normal i2c-address
   if (sht.init()) {
     Serial.print("init(): success\n");
@@ -54,6 +61,7 @@ void loop() {
     Payload payload;
     payload.temperature = sht.getTemperature();
     payload.humidity = sht.getHumidity();
+    payload.moisture = analogRead(moistureSensorPin);
 
     // Serialise payloadss
     char serialisedPayload[sizeof(payload)];
@@ -66,6 +74,8 @@ void loop() {
     Serial.print(payload.temperature);
     Serial.print(" humidity: ");
     Serial.print(payload.humidity);
+    Serial.print(" moisture: ");
+    Serial.print(payload.moisture);
     Serial.println("");
 
     radio.powerUp();
