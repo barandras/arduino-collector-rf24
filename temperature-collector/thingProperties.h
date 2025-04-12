@@ -12,7 +12,10 @@ const char DEVICE_KEY[]  = SECRET_DEVICE_KEY;    // Secret device password
 
 
 int moisture_avocado_01;
+int moisture_avocado_02;
+int moisture_avocado_03;
 int moisture_banana;
+CloudPercentage battery;
 CloudRelativeHumidity humidity;
 CloudTemperature temperature;
 
@@ -21,7 +24,10 @@ void initProperties(){
   ArduinoCloud.setBoardId(DEVICE_LOGIN_NAME);
   ArduinoCloud.setSecretDeviceKey(DEVICE_KEY);
   ArduinoCloud.addProperty(moisture_avocado_01, READ, 10 * SECONDS, NULL);
+  ArduinoCloud.addProperty(moisture_avocado_02, READ, 10 * SECONDS, NULL);
+  ArduinoCloud.addProperty(moisture_avocado_03, READ, 10 * SECONDS, NULL);
   ArduinoCloud.addProperty(moisture_banana, READ, 10 * SECONDS, NULL);
+  ArduinoCloud.addProperty(battery, READ, 10 * SECONDS, NULL);
   ArduinoCloud.addProperty(humidity, READ, 10 * SECONDS, NULL);
   ArduinoCloud.addProperty(temperature, READ, 10 * SECONDS, NULL);
 
